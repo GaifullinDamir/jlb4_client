@@ -1,41 +1,90 @@
 package Client;
-import java.io.*;
-import java.net.*;
-public class TCPClient implements Runnable {
-    public static final int PORT = 2500;
-    public static final String HOST = "localhost";
-    public static final int CLIENT_COUNT = 6;
-    public static final int READ_BUFFER_SIZE = 10;
-    private String name = null;
-    public TCPClient(String s){
-        name = s;
-    }
-    public void run(){
-        char[] readed = new char[READ_BUFFER_SIZE];
-        StringBuffer strBuff = new StringBuffer();
-        try{
-            Socket socket = new Socket(HOST, PORT);
-            InputStream in = socket.getInputStream();
-            InputStreamReader reader = new InputStreamReader(in);
-            while(true){
-                int count = reader.read(readed, 0, READ_BUFFER_SIZE);
-                if(count == -1) break;
-                strBuff.append(readed, 0, count);
-                Thread.yield();
-            }
-        } catch (UnknownHostException e) {
-            System.err.println("Исключение: " + e.toString());
-        } catch (IOException e) {
-            System.err.println("Исключение: " + e.toString());
-        }
-        System.out.println("Клиент " + name + " прочёл: " + strBuff.toString());
-    }
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.Socket;
+
+import Connection.TCPConnection;
+import Connection.ITCPConnectionListener;
+
+public class TCPClient implements ITCPConnectionListener {
+
+    private static String IP_ADDR;
+    private static int PORT;
+    private TCPConnection tcpConnection;
+    private String logPath;
+    private final BufferedReader stdin = new BufferedReader(new InputStreamReader(System.in));
+
     public static void main(String[] args) {
-        String name = "имя";
-        for(int i = 1; i <= CLIENT_COUNT; i++){
-            TCPClient ja = new TCPClient(name+i);
-            Thread th = new Thread(ja);
-            th.start();
+        new TCPClient();
+    }
+
+    private TCPClient() {
+        installInitialValues();
+
+        try {
+            tcpConnection = new TCPConnection(this, new Socket(IP_ADDR, PORT));
+            while (true) {
+                String msg = stdin.readLine();
+                tcpConnection.sendMessage(msg);
+            }
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    @Override
+    public void onConnectionReady(TCPConnection tcpConnection) {
+        System.out.println("Connection ready...");
+    }
+
+    @Override
+    public void onReceiveString(TCPConnection tcpConnection, String str) {
+        System.out.println(str);
+        log(str);
+    }
+
+    @Override
+    public void onDisconnect(TCPConnection tcpConnection) {
+        System.out.println("Connection close");
+    }
+
+    @Override
+    public void onException(TCPConnection tcpConnection, Exception e) {
+        System.out.println("Connection exception: " + e);
+    }
+
+    private void installInitialValues() {
+        try {
+            System.out.print("host: ");
+            IP_ADDR = stdin.readLine();
+
+            System.out.print("port: ");
+            PORT = Integer.parseInt(stdin.readLine());
+
+            System.out.print("client journal file path: ");
+            logPath = stdin.readLine();
+
+            File clientJournalFile = new File(logPath);
+            if (!clientJournalFile.exists()) {
+                clientJournalFile.createNewFile();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void log(String str) {
+        try {
+            FileWriter clientJournalFileWriter = new FileWriter(logPath, true);
+            clientJournalFileWriter.write(str);
+            clientJournalFileWriter.write('\n');
+            clientJournalFileWriter.close();
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
         }
     }
 }
