@@ -1,14 +1,11 @@
 package Client;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.Socket;
 
 import Connection.TCPConnection;
 import Connection.ITCPConnectionListener;
+import Exceptions.IncorrectPortException;
 
 public class TCPClient implements ITCPConnectionListener {
 
@@ -32,7 +29,7 @@ public class TCPClient implements ITCPConnectionListener {
                 tcpConnection.sendMessage(msg);
             }
         } catch (IOException e) {
-            System.out.println(e.getMessage());
+            System.out.println(e);
         }
     }
 
@@ -43,7 +40,7 @@ public class TCPClient implements ITCPConnectionListener {
 
     @Override
     public void onReceiveString(TCPConnection tcpConnection, String str) {
-        System.out.println(str);
+        System.out.println("Здарова" + str);
         log(str);
     }
 
@@ -58,22 +55,25 @@ public class TCPClient implements ITCPConnectionListener {
     }
 
     private void installInitialValues() {
-        try {
-            System.out.print("host: ");
-            IP_ADDR = stdin.readLine();
-
-            System.out.print("port: ");
-            PORT = Integer.parseInt(stdin.readLine());
-
-            System.out.print("client journal file path: ");
+        try (BufferedReader clientPortFileReader = new BufferedReader(new FileReader("config.txt"))){
+            IP_ADDR = clientPortFileReader.readLine();
+            var portStr = clientPortFileReader.readLine();
+            if(portStr.length() > 4){
+                throw new IncorrectPortException();
+            }
+            PORT = Integer.parseInt(portStr);
+            System.out.println("Host: " + IP_ADDR + "\n" +
+                    "Port: " + PORT + "\n");
+            System.out.print("Client journal file path: ");
             logPath = stdin.readLine();
-
             File clientJournalFile = new File(logPath);
             if (!clientJournalFile.exists()) {
                 clientJournalFile.createNewFile();
             }
         } catch (IOException e) {
             e.printStackTrace();
+        } catch(Exception e){
+            System.out.println(e);
         }
     }
 

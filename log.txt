@@ -1,2 +1,18 @@
-Client connected: TCPConnection: /127.0.0.1: 58425
-Client connected: TCPConnection: /127.0.0.1: 58898
+Client connected: TCPConnection: /127.0.0.1: 50313
+The expression you entered contains an unrecognized character.
+java.util.EmptyStackException
+The expression you entered contains an unrecognized character.
+The expression you entered contains an unrecognized character.
+The expression you entered contains an unrecognized character.
+Результат вычисления: 23.0
+The expression you entered contains an unrecognized character.
+Результат вычисления: 234.0
+Результат вычисления: 2.0
+Результат вычисления: 423.0
+Результат вычисления: 4.0
+Результат вычисления: 234.0
+The expression you entered contains an unrecognized character.
+The expression you entered contains an unrecognized character.
+The number of characters in an equation line exceeds 200.
+Client connected: TCPConnection: /127.0.0.1: 51077
+Результат вычисления: 35.0
