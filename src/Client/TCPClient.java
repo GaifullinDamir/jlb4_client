@@ -25,6 +25,7 @@ public class TCPClient implements ITCPConnectionListener {
         try {
             tcpConnection = new TCPConnection(this, new Socket(IP_ADDR, PORT));
             while (true) {
+                System.out.println("Введите пример:");
                 String msg = stdin.readLine();
                 tcpConnection.sendMessage(msg);
             }
@@ -40,7 +41,7 @@ public class TCPClient implements ITCPConnectionListener {
 
     @Override
     public void onReceiveString(TCPConnection tcpConnection, String str) {
-        System.out.println("Здарова" + str);
+        System.out.println(str);
         log(str);
     }
 
@@ -84,7 +85,7 @@ public class TCPClient implements ITCPConnectionListener {
             clientJournalFileWriter.write('\n');
             clientJournalFileWriter.close();
         } catch (IOException e) {
-            System.out.println(e.getMessage());
+            System.out.println(e);
         }
     }
 }
