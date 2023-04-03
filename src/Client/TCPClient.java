@@ -25,7 +25,7 @@ public class TCPClient implements ITCPConnectionListener {
         try {
             tcpConnection = new TCPConnection(this, new Socket(IP_ADDR, PORT));
             while (true) {
-                System.out.println("Введите пример:");
+                System.out.println("Enter expression:");
                 String msg = stdin.readLine();
                 tcpConnection.sendMessage(msg);
             }

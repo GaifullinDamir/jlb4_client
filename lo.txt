@@ -1,4 +1,0 @@
-Client connected: TCPConnection: /127.0.0.1: 51157
-Client connected: TCPConnection: /127.0.0.1: 51177
-Результат вычисления: 25.0
-The expression you entered contains an unrecognized character.
